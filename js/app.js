@@ -1,4 +1,5 @@
 import { OPENAI_API_KEY } from "../config.js"
+import { FIREBASE_CONFIG} from "../config.js"
 
 // FirebaseのSDKをimport
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
@@ -11,14 +12,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-database.js";
 
 // Firebaseの設定
-const firebaseConfig = {
-  apiKey: "AIzaSyBWBuPcufMg9sY1rx_3n4U7QU2hMfyE6Gw",
-  authDomain: "faqapp202311.firebaseapp.com",
-  projectId: "faqapp202311",
-  storageBucket: "faqapp202311.appspot.com",
-  messagingSenderId: "950282451735",
-  appId: "1:950282451735:web:b1228191e3408f41e55552",
-};
+const firebaseConfig = FIREBASE_CONFIG;
 
 // Firebaseの初期化
 const app = initializeApp(firebaseConfig);
