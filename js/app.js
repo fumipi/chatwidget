@@ -98,13 +98,6 @@ const handleChat = () => {
 
   // Generate AI response
   generateResponse(tempChatLi);
-
-  // setTimeout(() => {
-  //   const incomingChatLi = createChatLi("考え中...", "incoming");
-  //   chatbox.appendChild(incomingChatLi);
-  //   chatbox.scrollTo(0, chatbox.scrollHeight);
-  //   generateResponse(incomingChatLi);
-  // }, 600);
 };
 
 chatInput.addEventListener("input", () => {
