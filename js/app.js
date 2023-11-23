@@ -48,38 +48,6 @@ const createChatLi = (message, className) => {
   chatLi.querySelector("p").textContent = message;
   return chatLi; // return chat <li> element
 };
-// const generateResponse = (chatElement) => {
-//   const API_URL = "https://api.openai.com/v1/chat/completions";
-//   // Define the properties and message for the API request
-//   const requestOptions = {
-//     method: "POST",
-//     headers: {
-//       "Content-Type": "application/json",
-//       Authorization: `Bearer ${API_KEY}`,
-//     },
-//     body: JSON.stringify({
-//       model: "gpt-3.5-turbo",
-//       messages: [{ role: "user", content: userMessage }],
-//     }),
-//   };
-//   // Send POST request to API, get response and set the reponse as paragraph text
-//   fetch(API_URL, requestOptions)
-//     .then((res) => res.json())
-//     .then((data) => {
-//       const aiResponse = data.choices[0].message.content.trim();
-
-//       // Save AI response to Firebase
-//       const aiResponseRef = push(dbRef);
-//       set(aiResponseRef, { text: aiResponse, source: 'ai' });
-//       const tempThinking = document.getElementById("temp-thinking");
-//       if (tempThinking) {
-//         tempThinking.remove();
-//       }
-//     })
-//     .catch(() => {
-//       console.error("Error with OpenAI API:", error);
-//     })
-// };
 
 const generateResponse = (chatElement) => {
   const API_URL = "https://api.openai.com/v1/chat/completions";
