@@ -1,3 +1,5 @@
+import { OPENAI_API_KEY } from "../config.js"
+
 // FirebaseのSDKをimport
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
 import {
@@ -37,7 +39,7 @@ const chatbox = document.querySelector(".chatbox");
 const chatInput = document.querySelector(".chat-input textarea");
 const sendChatBtn = document.querySelector(".chat-input span");
 let userMessage = null; // Variable to store user's message
-const API_KEY = "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";
+const API_KEY = OPENAI_API_KEY;
 const inputInitHeight = chatInput.scrollHeight;
 const createChatLi = (message, className) => {
   // Create a chat <li> element with passed message and className
