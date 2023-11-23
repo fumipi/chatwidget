@@ -9,6 +9,7 @@ import {
   push,
   set,
   onChildAdded,
+  get
 } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-database.js";
 
 // Firebaseの設定
@@ -47,37 +48,90 @@ const createChatLi = (message, className) => {
   chatLi.querySelector("p").textContent = message;
   return chatLi; // return chat <li> element
 };
+// const generateResponse = (chatElement) => {
+//   const API_URL = "https://api.openai.com/v1/chat/completions";
+//   // Define the properties and message for the API request
+//   const requestOptions = {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//       Authorization: `Bearer ${API_KEY}`,
+//     },
+//     body: JSON.stringify({
+//       model: "gpt-3.5-turbo",
+//       messages: [{ role: "user", content: userMessage }],
+//     }),
+//   };
+//   // Send POST request to API, get response and set the reponse as paragraph text
+//   fetch(API_URL, requestOptions)
+//     .then((res) => res.json())
+//     .then((data) => {
+//       const aiResponse = data.choices[0].message.content.trim();
+
+//       // Save AI response to Firebase
+//       const aiResponseRef = push(dbRef);
+//       set(aiResponseRef, { text: aiResponse, source: 'ai' });
+//       const tempThinking = document.getElementById("temp-thinking");
+//       if (tempThinking) {
+//         tempThinking.remove();
+//       }
+//     })
+//     .catch(() => {
+//       console.error("Error with OpenAI API:", error);
+//     })
+// };
+
 const generateResponse = (chatElement) => {
   const API_URL = "https://api.openai.com/v1/chat/completions";
-  // Define the properties and message for the API request
-  const requestOptions = {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${API_KEY}`,
-    },
-    body: JSON.stringify({
-      model: "gpt-3.5-turbo",
-      messages: [{ role: "user", content: userMessage }],
-    }),
-  };
-  // Send POST request to API, get response and set the reponse as paragraph text
-  fetch(API_URL, requestOptions)
-    .then((res) => res.json())
-    .then((data) => {
-      const aiResponse = data.choices[0].message.content.trim();
 
-      // Save AI response to Firebase
-      const aiResponseRef = push(dbRef);
-      set(aiResponseRef, { text: aiResponse, source: 'ai' });
-      const tempThinking = document.getElementById("temp-thinking");
-      if (tempThinking) {
-        tempThinking.remove();
-      }
-    })
-    .catch(() => {
-      console.error("Error with OpenAI API:", error);
-    })
+  // Fetch the entire chat history from Firebase
+  get(dbRef).then((snapshot) => {
+    if (snapshot.exists()) {
+      const chatData = snapshot.val();
+      const chatHistory = Object.values(chatData).map(msg => {
+        // Format each message for the OpenAI API
+        return { role: msg.source === 'user' ? 'user' : 'assistant', content: msg.text };
+      });
+      console.log(chatHistory);
+
+      // Setup the request for the OpenAI API
+      const requestOptions = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: "gpt-3.5-turbo",
+          messages: chatHistory,
+        }),
+      };
+
+      // Send request to OpenAI API and handle the response
+      fetch(API_URL, requestOptions)
+        .then((res) => res.json())
+        .then((data) => {
+          const aiResponse = data.choices[0].message.content.trim();
+
+          // Save AI response to Firebase
+          const aiResponseRef = push(dbRef);
+          set(aiResponseRef, { text: aiResponse, source: 'ai' });
+
+          // Remove the temporary "Thinking..." message if it exists
+          const tempThinking = document.getElementById("temp-thinking");
+          if (tempThinking) {
+            tempThinking.remove();
+          }
+        })
+        .catch((error) => {
+          console.error("Error with OpenAI API:", error);
+        });
+    } else {
+      console.error("No chat data available");
+    }
+  }).catch((error) => {
+    console.error("Error fetching chat history:", error);
+  });
 };
 
 const handleChat = () => {
